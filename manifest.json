@@ -1,7 +1,7 @@
 {
-  "name": "Los Olivos De Quito",
+  "name": "LODQ",
   "short_name": "LODQ",
-  "start_url": "./index.html",
+  "start_url": "./index.html?v=2",
   "display": "standalone",
   "background_color": "#111827",
   "theme_color": "#111827",
@@ -9,12 +9,14 @@
     {
       "src": "https://cdn-icons-png.flaticon.com/512/616/616554.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/616/616554.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
