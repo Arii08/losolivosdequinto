@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Perros - Criadero</title>
+  <!-- Tailwind CSS para un diseño limpio y moderno -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen p-6">
+
+  <div class="max-w-4xl mx-auto">
+    <!-- Cabecera -->
+    <header class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-800">Los Olivos De Quito</h1>
+      <p class="text-gray-600 mt-1">Buscador de ejemplares y documentos LOE</p>
+    </header>
+
+    <!-- Buscador -->
+    <div class="mb-8">
+      <input 
+        type="text" 
+        id="searchInput" 
+        placeholder="Buscar por nombre, LOE, microchip o variedad..." 
+        class="w-full p-4 rounded-xl border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-lg"
+        onkeyup="filterDogs()"
+      >
+    </div>
+
+    <!-- Indicador de carga -->
+    <div id="loading" class="text-center text-gray-500 py-10">
+      Cargando información desde la base de datos...
+    </div>
+
+    <!-- Resultados -->
+    <div id="dogsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+      <!-- Las tarjetas de los perros se generan dinámicamente aquí -->
+    </div>
+  </div>
+
+  <script>
+    // REEMPLAZA ESTA URL CON LA QUE OBTUVISTE EN GOOGLE APPS SCRIPT
+    const API_URL = "https://script.google.com/macros/s/AKfycbw0RY1meAA3FbRzXytpVOgBlrY1kqta936jFIO5NS8qa6wRzC0jEArSaD0xkAJI7r9Fkw/exec";
+
+    let dogsData = [];
+
+    // Cargar datos al iniciar
+    async function fetchDogs() {
+      try {
+        const response = await fetch(API_URL);
+        dogsData = await response.json();
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('dogsContainer').classList.remove('hidden');
+        renderDogs(dogsData);
+      } catch (error) {
+        console.error("Error al cargar los datos:", error);
+        document.getElementById('loading').innerText = "Error al conectar con la base de datos.";
+      }
+    }
+
+    // Renderizar tarjetas de perros
+    // Función auxiliar para convertir enlaces de Google Drive en imágenes directas
+function getDirectDriveImageUrl(url) {
+  if (!url) return '';
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  }
+  return url;
+}
+
+function renderDogs(dogs) {
+  const container = document.getElementById('dogsContainer');
+  container.innerHTML = "";
+
+  if (dogs.length === 0) {
+    container.innerHTML = `<p class="text-gray-500 text-center col-span-2">No se encontraron perros.</p>`;
+    return;
+  }
+
+  dogs.forEach(dog => {
+    const rawFotoUrl = dog["Foto LOE"] || dog["Foto Loe"] || dog["Foto loe"] || dog["Foto"] || dog["LOE Foto"] || dog["Foto LOE (URL)"] || "";
+    const directFotoUrl = getDirectDriveImageUrl(rawFotoUrl.toString().trim());
+
+    const card = `
+      <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="text-xl font-bold text-gray-900">${dog.Nombre || 'Sin Nombre'}</h2>
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+              ${dog.Sexo || 'N/A'}
+            </span>
+          </div>
+          
+          <ul class="text-sm text-gray-600 space-y-2 mb-4">
+            <li><strong>Fecha Nacimiento:</strong> ${dog["Fecha de nacimiento"] ? new Date(dog["Fecha de nacimiento"]).toLocaleDateString() : 'N/A'}</li>
+            <li><strong>LOE:</strong> ${dog.Loe || dog.LOE || 'N/A'}</li>
+            <li><strong>Variedad:</strong> ${dog.Variedad || 'N/A'}</li>
+            <li><strong>Identificación (Chip):</strong> ${dog.Identificacion || dog["Identificación"] || 'N/A'}</li>
+          </ul>
+        </div>
+
+        <div class="mt-2 border-t pt-4">
+          <p class="text-xs font-semibold text-gray-500 mb-2">Documento LOE / Pedigree:</p>
+          ${directFotoUrl ? `
+            <div class="overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+              <img 
+                src="${directFotoUrl}" 
+                alt="LOE ${dog.Nombre}" 
+                class="w-full h-48 object-cover hover:scale-105 transition duration-300 cursor-pointer"
+                onclick="window.open('${rawFotoUrl}', '_blank')"
+                title="Haz clic para ver la imagen a tamaño completo"
+                onerror="this.onerror=null; this.parentElement.innerHTML='<a href=\'${rawFotoUrl}\' target=\'_blank\' class=\'text-xs text-blue-600 underline\'>Ver documento externo</a>';"
+              />
+            </div>
+            <p class="text-[10px] text-gray-400 mt-1 text-center">Haz clic en la imagen para abrir en alta resolución</p>
+          ` : '<p class="text-xs text-gray-400 italic">Sin documento subido</p>'}
+        </div>
+      </div>
+    `;
+    container.innerHTML += card;
+  });
+}
+
+    // Filtrar búsqueda en tiempo real
+    function filterDogs() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = dogsData.filter(dog => {
+        return (
+          (dog.Nombre && dog.Nombre.toString().toLowerCase().includes(query)) ||
+          (dog.Loe && dog.Loe.toString().toLowerCase().includes(query)) ||
+          (dog.Identificacion && dog.Identificacion.toString().toLowerCase().includes(query)) ||
+          (dog.Variedad && dog.Variedad.toString().toLowerCase().includes(query))
+        );
+      });
+      renderDogs(filtered);
+    }
+
+    // Inicializar
+    fetchDogs();
+  </script>
+</body>
+</html>
