@@ -104,13 +104,14 @@
     }
 
     function getDirectDriveImageUrl(url) {
-      if (!url) return '';
-      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) {
-        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-      }
-      return url;
-    }
+  if (!url) return '';
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    // Genera la vista previa oficial usando el CDN de Google (funciona con PNG, JPG y PDF)
+    return `https://lh3.googleusercontent.com/d/${match[1]}=s1000`;
+  }
+  return url;
+}
 
     function formatearFecha(fechaRaw) {
       if (!fechaRaw || fechaRaw === 'N/A') return 'N/A';
@@ -233,6 +234,7 @@
                     class="w-full h-52 object-cover rounded-xl group-hover:scale-105 transition duration-300 cursor-pointer"
                     onclick="window.open('${rawFotoUrl}', '_blank')"
                     title="Haz clic para abrir el archivo a tamaño completo"
+                    onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/f59e0b?text=Ver+Documento+LOE';"
                   />
                 </div>
                 <p class="text-[11px] text-slate-400 mt-2 text-center">Toca la imagen para abrir en alta resolución ↗</p>
