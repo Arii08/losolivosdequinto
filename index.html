@@ -136,8 +136,12 @@
         const directFotoUrl = getDirectDriveImageUrl(rawFotoUrl.toString().trim());
 
         // BUSCAR LA FECHA DE NACIMIENTO PROBANDO TODAS LAS POSIBLES VARIANTES DE COLUMNA:
-        const fechaNac = dog["Fecha Nacimiento"] || dog["Fecha nacimiento"] || dog["Fecha de nacimiento"] || dog["FECHA NACIMIENTO"] || dog["Fecha"] || 'N/A';
+        // Obtener el valor bruto de la fecha de la base de datos
+const rawFecha = dog["Fecha Nacimiento"] || dog["Fecha nacimiento"] || dog["Fecha de nacimiento"] || dog["FECHA NACIMIENTO"] || dog["Fecha"] || 'N/A';
 
+// Limpiar el formato para que solo muestre la fecha (DD/MM/YYYY)
+const fechaNac = formatearFecha(rawFecha);
+        
         const card = `
           <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition flex flex-col justify-between">
             <div>
@@ -196,6 +200,27 @@
       });
       renderDogs(filtered);
     }
+
+    // Función para limpiar la fecha y mostrar solo DD/MM/YYYY
+function formatearFecha(fechaRaw) {
+  if (!fechaRaw || fechaRaw === 'N/A') return 'N/A';
+  
+  const str = fechaRaw.toString().trim();
+  
+  // Si viene en formato ISO (contiene "T")
+  if (str.includes('T')) {
+    const dateObj = new Date(str);
+    if (!isNaN(dateObj.getTime())) {
+      const dia = String(dateObj.getDate()).padStart(2, '0');
+      const mes = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const anio = dateObj.getFullYear();
+      return `${dia}/${mes}/${anio}`;
+    }
+  }
+  
+  // Si ya viene como texto limpio (ej: 02/05/2026)
+  return str.split('T')[0];
+}
   </script>
 </body>
 </html>
