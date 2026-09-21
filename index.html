@@ -127,23 +127,50 @@
       return str.split('T')[0];
     }
 
-    async function fetchDogs() {
-      try {
-        const response = await fetch(API_URL, { redirect: "follow" });
-        if (!response.ok) throw new Error("Error HTTP");
-        dogsData = await response.json();
-        document.getElementById('loading').classList.add('hidden');
-        document.getElementById('dogsContainer').classList.remove('hidden');
-        renderDogs(dogsData);
-      } catch (error) {
-        console.error("Error al cargar datos:", error);
-        document.getElementById('loading').innerHTML = `
-          <div class="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-4 rounded-2xl max-w-md mx-auto">
-            ❌ Error al conectar con la base de datos. Comprueba la URL de Apps Script.
-          </div>
-        `;
-      }
+   async function fetchDogs() {
+  const container = document.getElementById('dogsContainer');
+  const loading = document.getElementById('loading');
+
+  // 1. Intentar cargar los datos guardados en el teléfono inmediatamente
+  const cachedData = localStorage.getItem('lodq_dogs_cache');
+  if (cachedData) {
+    try {
+      dogsData = JSON.parse(cachedData);
+      loading.classList.add('hidden');
+      container.classList.remove('hidden');
+      renderDogs(dogsData); // Muestra los perros AL INSTANTE
+    } catch (e) {
+      console.error("Error al leer caché local", e);
     }
+  }
+
+  // 2. Pedir la versión actualizada a Google Sheets en segundo plano
+  try {
+    const response = await fetch(API_URL, { redirect: "follow" });
+    if (!response.ok) throw new Error("Error HTTP");
+    
+    const freshData = await response.json();
+    dogsData = freshData;
+
+    // Guardar la versión más reciente en la memoria del móvil
+    localStorage.setItem('lodq_dogs_cache', JSON.stringify(freshData));
+
+    // Ocultar cargador y refrescar la pantalla con los nuevos datos
+    loading.classList.add('hidden');
+    container.classList.remove('hidden');
+    renderDogs(dogsData);
+  } catch (error) {
+    console.error("Error al actualizar datos desde red:", error);
+    // Si no había nada en caché y la red falla, muestra el error
+    if (!cachedData) {
+      loading.innerHTML = `
+        <div class="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-4 rounded-2xl max-w-md mx-auto">
+          ❌ Error al conectar con la base de datos. Comprueba la conexión.
+        </div>
+      `;
+    }
+  }
+}
 
     function renderDogs(dogs) {
       const container = document.getElementById('dogsContainer');
