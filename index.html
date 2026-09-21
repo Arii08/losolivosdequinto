@@ -151,7 +151,7 @@
               </div>
               
               <ul class="text-sm text-gray-600 space-y-2 mb-4">
-                <li><strong>Fecha Nacimiento:</strong> ${dog["Fecha de nacimiento"] ? new Date(dog["Fecha de nacimiento"]).toLocaleDateString() : 'N/A'}</li>
+                <li><strong>Fecha Nacimiento:</strong> ${dog["Fecha nacimiento"] ? new Date(dog["Fecha de nacimiento"]).toLocaleDateString() : 'N/A'}</li>
                 <li><strong>LOE:</strong> ${dog.Loe || dog.LOE || 'N/A'}</li>
                 <li><strong>Variedad:</strong> ${dog.Variedad || 'N/A'}</li>
                 <li><strong>Identificación (Chip):</strong> ${dog.Identificacion || dog["Identificación"] || 'N/A'}</li>
