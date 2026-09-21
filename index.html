@@ -9,7 +9,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#0f172a">
   
   <link rel="manifest" href="./manifest.json?v=3">
   <link rel="apple-touch-icon" href="./icon.png?v=3">
@@ -18,70 +18,74 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen p-6">
+<body class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 font-sans min-h-screen text-slate-100 p-4 md:p-8">
 
   <!-- Pantalla de Login / PIN -->
-  <div id="loginScreen" class="fixed inset-0 bg-gray-900 bg-opacity-95 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
-      <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
-        🔒
+  <div id="loginScreen" class="fixed inset-0 bg-slate-950 bg-opacity-95 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-900 border border-amber-500/30 rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
+      <div class="w-20 h-20 bg-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-5 text-4xl shadow-inner border border-amber-500/30">
+        🐾
       </div>
-      <h2 class="text-2xl font-bold text-gray-800 mb-2">Acceso Privado</h2>
-      <p class="text-sm text-gray-500 mb-6">Introduce la clave para ver la información de Los Olivos de Quinto.</p>
+      <h2 class="text-3xl font-extrabold text-white mb-2 tracking-wide">LODQ</h2>
+      <p class="text-sm text-slate-400 mb-6">Introduce tu clave para acceder al criadero</p>
       
       <form onsubmit="validarPIN(event)">
         <input 
           type="password" 
           id="pinInput" 
-          placeholder="Código PIN" 
-          class="w-full text-center text-2xl tracking-widest p-3 border border-gray-300 rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          placeholder="••••" 
+          class="w-full text-center text-3xl tracking-widest p-3 bg-slate-800 border border-slate-700 text-amber-400 rounded-2xl mb-4 focus:ring-2 focus:ring-amber-500 focus:outline-none"
           autofocus
         >
         <button 
           type="submit" 
-          class="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition"
+          class="w-full py-3.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-2xl shadow-lg transition duration-200 transform active:scale-95"
         >
-          Entrar
+          Entrar a la App
         </button>
       </form>
-      <p id="errorPin" class="text-red-500 text-xs mt-3 hidden">Contraseña incorrecta. Inténtalo de nuevo.</p>
+      <p id="errorPin" class="text-rose-400 text-xs font-semibold mt-4 hidden">Contraseña incorrecta. Inténtalo de nuevo.</p>
     </div>
   </div>
 
-  <!-- Contenido Principal de la App -->
-  <div id="mainApp" class="max-w-4xl mx-auto hidden">
+  <!-- Contenido Principal -->
+  <div id="mainApp" class="max-w-5xl mx-auto hidden">
     <!-- Cabecera -->
-    <header class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-gray-800">Los Olivos De Quinto</h1>
-      <p class="text-gray-600 mt-1">Buscador de ejemplares y documentos LOE</p>
+    <header class="text-center mb-10 pt-4">
+      <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-4 py-1.5 rounded-full text-amber-400 text-xs font-bold mb-3 tracking-wider uppercase">
+        🐾 Los Olivos De Quinto
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight">Gestión del Criadero</h1>
+      <p class="text-slate-400 text-sm md:text-base mt-2">Buscador de ejemplares y pedigree LOE</p>
     </header>
 
-    <!-- Buscador -->
-    <div class="mb-8">
+    <!-- Buscador con icono -->
+    <div class="mb-10 max-w-2xl mx-auto relative">
       <input 
         type="text" 
         id="searchInput" 
         placeholder="Buscar por nombre, LOE, microchip o variedad..." 
-        class="w-full p-4 rounded-xl border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-lg"
+        class="w-full pl-5 pr-12 py-4 rounded-2xl bg-slate-800/80 backdrop-blur-sm border border-slate-700 text-white placeholder-slate-400 shadow-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent focus:outline-none text-base md:text-lg transition"
         onkeyup="filterDogs()"
       >
+      <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xl text-slate-400">🔍</span>
     </div>
 
-    <!-- Indicador de carga -->
-    <div id="loading" class="text-center text-gray-500 py-10">
-      Cargando información desde la base de datos...
+    <!-- Carga -->
+    <div id="loading" class="text-center py-16">
+      <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-amber-500 border-t-transparent mb-4"></div>
+      <p class="text-slate-400 text-sm font-medium">Cargando base de datos...</p>
     </div>
 
-    <!-- Resultados -->
+    <!-- Contenedor de Perros -->
     <div id="dogsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
-      <!-- Tarjetas de perros -->
+      <!-- Tarjetas -->
     </div>
   </div>
 
   <script>
-    // Configuración del PIN y de la API
     const PIN_CORRECTO = "1234"; // Pon aquí tu PIN
-    const API_URL = "https://script.google.com/macros/s/AKfycbw0RY1meAA3FbRzXytpVOgBlrY1kqta936jFIO5NS8qa6wRzC0jEArSaD0xkAJI7r9Fkw/exec"; // Asegúrate de tener aquí tu URL de Google Apps Script
+    const API_URL = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT"; 
 
     let dogsData = [];
 
@@ -108,6 +112,21 @@
       return url;
     }
 
+    function formatearFecha(fechaRaw) {
+      if (!fechaRaw || fechaRaw === 'N/A') return 'N/A';
+      const str = fechaRaw.toString().trim();
+      if (str.includes('T')) {
+        const dateObj = new Date(str);
+        if (!isNaN(dateObj.getTime())) {
+          const dia = String(dateObj.getDate()).padStart(2, '0');
+          const mes = String(dateObj.getMonth() + 1).padStart(2, '0');
+          const anio = dateObj.getFullYear();
+          return `${dia}/${mes}/${anio}`;
+        }
+      }
+      return str.split('T')[0];
+    }
+
     async function fetchDogs() {
       try {
         const response = await fetch(API_URL, { redirect: "follow" });
@@ -118,7 +137,11 @@
         renderDogs(dogsData);
       } catch (error) {
         console.error("Error al cargar datos:", error);
-        document.getElementById('loading').innerText = "Error al conectar con la base de datos.";
+        document.getElementById('loading').innerHTML = `
+          <div class="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-4 rounded-2xl max-w-md mx-auto">
+            ❌ Error al conectar con la base de datos. Comprueba la URL de Apps Script.
+          </div>
+        `;
       }
     }
 
@@ -127,7 +150,7 @@
       container.innerHTML = "";
 
       if (dogs.length === 0) {
-        container.innerHTML = `<p class="text-gray-500 text-center col-span-2">No se encontraron perros.</p>`;
+        container.innerHTML = `<p class="text-slate-400 text-center col-span-2 py-10">No se encontraron perros con ese criterio.</p>`;
         return;
       }
 
@@ -135,52 +158,58 @@
         const rawFotoUrl = dog["Foto Loe"] || dog["Foto LOE"] || dog["Foto loe"] || dog["Foto"] || "";
         const directFotoUrl = getDirectDriveImageUrl(rawFotoUrl.toString().trim());
 
-        // BUSCAR LA FECHA DE NACIMIENTO PROBANDO TODAS LAS POSIBLES VARIANTES DE COLUMNA:
-        // Obtener el valor bruto de la fecha de la base de datos
-const rawFecha = dog["Fecha Nacimiento"] || dog["Fecha nacimiento"] || dog["Fecha de nacimiento"] || dog["FECHA NACIMIENTO"] || dog["Fecha"] || 'N/A';
+        const rawFecha = dog["Fecha Nacimiento"] || dog["Fecha nacimiento"] || dog["Fecha de nacimiento"] || dog["FECHA NACIMIENTO"] || dog["Fecha"] || 'N/A';
+        const fechaNac = formatearFecha(rawFecha);
 
-// Limpiar el formato para que solo muestre la fecha (DD/MM/YYYY)
-const fechaNac = formatearFecha(rawFecha);
-        
+        const esHembra = (dog.Sexo || '').toString().toLowerCase().includes('hembra');
+        const badgeSexoClass = esHembra 
+          ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' 
+          : 'bg-sky-500/20 text-sky-300 border-sky-500/30';
+
         const card = `
-          <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100 hover:shadow-lg transition flex flex-col justify-between">
+          <div class="bg-slate-800/90 border border-slate-700/60 rounded-3xl p-6 shadow-xl hover:shadow-2xl hover:border-amber-500/40 hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
             <div>
-              <div class="flex justify-between items-start mb-4">
-                <h2 class="text-xl font-bold text-gray-900">${dog.Nombre || 'Sin Nombre'}</h2>
-                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+              <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-700/50">
+                <h2 class="text-2xl font-black text-white tracking-tight">${dog.Nombre || 'Sin Nombre'}</h2>
+                <span class="px-3.5 py-1 rounded-full text-xs font-bold border ${badgeSexoClass}">
                   ${dog.Sexo || 'N/A'}
                 </span>
               </div>
               
-              <ul class="text-sm text-gray-600 space-y-2 mb-4">
-                <li><strong>Fecha Nacimiento:</strong> ${fechaNac}</li>
-                <li><strong>LOE:</strong> ${dog.Loe || dog.LOE || 'N/A'}</li>
-                <li><strong>Variedad:</strong> ${dog.Variedad || 'N/A'}</li>
-                <li><strong>Identificación (Chip):</strong> ${dog.Identificacion || dog["Identificación"] || 'N/A'}</li>
+              <ul class="text-sm space-y-2.5 mb-5 text-slate-300">
+                <li class="flex items-center gap-2">
+                  <span class="text-amber-400">🎂</span>
+                  <strong class="text-slate-400">Nacimiento:</strong> ${fechaNac}
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-amber-400">📜</span>
+                  <strong class="text-slate-400">LOE:</strong> <span class="font-mono text-amber-200">${dog.Loe || dog.LOE || 'N/A'}</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-amber-400">🐶</span>
+                  <strong class="text-slate-400">Variedad:</strong> ${dog.Variedad || 'N/A'}
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-amber-400">🏷️</span>
+                  <strong class="text-slate-400">Microchip:</strong> <span class="font-mono text-slate-300">${dog.Identificacion || dog["Identificación"] || 'N/A'}</span>
+                </li>
               </ul>
             </div>
 
-            <div class="mt-2 border-t pt-4">
-              <p class="text-xs font-semibold text-gray-500 mb-2">Documento LOE / Pedigree:</p>
+            <div class="mt-2 pt-4 border-t border-slate-700/50">
+              <p class="text-xs font-bold uppercase tracking-wider text-amber-400/80 mb-3">Documento LOE / Pedigree</p>
               ${rawFotoUrl ? `
-                <div class="overflow-hidden rounded-xl border border-gray-200 bg-gray-50 flex flex-col items-center justify-center p-2">
+                <div class="overflow-hidden rounded-2xl border border-slate-700 bg-slate-900/60 p-2 group">
                   <img 
                     src="${directFotoUrl}" 
                     alt="LOE ${dog.Nombre}" 
-                    class="w-full h-48 object-cover rounded-lg hover:scale-105 transition duration-300 cursor-pointer"
+                    class="w-full h-52 object-cover rounded-xl group-hover:scale-105 transition duration-300 cursor-pointer"
                     onclick="window.open('${rawFotoUrl}', '_blank')"
                     title="Haz clic para abrir el archivo a tamaño completo"
-                    onerror="this.onerror=null; this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');"
                   />
-                  <div class="hidden text-center py-4">
-                    <p class="text-xs text-gray-500 mb-2">Previsualización restringida por Google Drive</p>
-                    <a href="${rawFotoUrl}" target="_blank" rel="noopener noreferrer" class="inline-block px-4 py-2 bg-gray-800 text-white text-xs font-medium rounded-lg hover:bg-gray-700 transition">
-                      📄 Abrir Documento LOE
-                    </a>
-                  </div>
                 </div>
-                <p class="text-[10px] text-gray-400 mt-1 text-center">Haz clic para abrir el archivo en alta resolución</p>
-              ` : '<p class="text-xs text-gray-400 italic">Sin documento subido</p>'}
+                <p class="text-[11px] text-slate-400 mt-2 text-center">Toca la imagen para abrir en alta resolución ↗</p>
+              ` : '<p class="text-xs text-slate-500 italic">Sin documento asignado</p>'}
             </div>
           </div>
         `;
@@ -200,27 +229,6 @@ const fechaNac = formatearFecha(rawFecha);
       });
       renderDogs(filtered);
     }
-
-    // Función para limpiar la fecha y mostrar solo DD/MM/YYYY
-function formatearFecha(fechaRaw) {
-  if (!fechaRaw || fechaRaw === 'N/A') return 'N/A';
-  
-  const str = fechaRaw.toString().trim();
-  
-  // Si viene en formato ISO (contiene "T")
-  if (str.includes('T')) {
-    const dateObj = new Date(str);
-    if (!isNaN(dateObj.getTime())) {
-      const dia = String(dateObj.getDate()).padStart(2, '0');
-      const mes = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const anio = dateObj.getFullYear();
-      return `${dia}/${mes}/${anio}`;
-    }
-  }
-  
-  // Si ya viene como texto limpio (ej: 02/05/2026)
-  return str.split('T')[0];
-}
   </script>
 </body>
 </html>
